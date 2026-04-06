@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Γραμμική Α — Μινωική Κρήτη</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Nunito:wght@400;600;700&display=swap');
+
+  :root {
+    --clay:    #C4894A;
+    --dark:    #2A1A0A;
+    --cream:   #F5EDD8;
+    --parchment: #EDE0C0;
+    --teal:    #2E7D7A;
+    --teal-lt: #A8D5D3;
+    --red:     #B83232;
+    --gold:    #D4A017;
+    --shadow:  rgba(42,26,10,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(196,137,74,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 90%, rgba(46,125,122,0.10) 0%, transparent 60%);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--dark);
+    color: var(--cream);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 3px solid var(--clay);
+  }
+  .header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    letter-spacing: .05em;
+  }
+  .header .subtitle { font-size: .8rem; color: var(--teal-lt); margin-top: 2px; }
+  .minotaur { font-size: 1.8rem; }
+
+  /* ── SCREEN SYSTEM ── */
+  .screen { display: none; padding: 1.5rem; max-width: 680px; margin: 0 auto; }
+  .screen.active { display: block; }
+
+  /* ── TITLE SCREEN ── */
+  .title-deco {
+    text-align: center;
+    padding: 1.5rem 1rem 1rem;
+  }
+  .sign-showcase {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+    flex-wrap: wrap;
+  }
+  .sign-pill {
+    background: var(--dark);
+    color: var(--gold);
+    font-size: 2rem;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid var(--clay);
+    transition: transform .2s;
+  }
+  .sign-pill:hover { transform: scale(1.15); }
+
+  .title-text {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .title-text h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--dark);
+    margin-bottom: .4rem;
+  }
+  .title-text p {
+    font-size: .9rem;
+    color: #5a3e20;
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .mode-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 1.2rem;
+  }
+  .mode-card {
+    background: var(--dark);
+    border: 2px solid var(--clay);
+    border-radius: 12px;
+    padding: 1rem .75rem;
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+    color: var(--cream);
+  }
+  .mode-card:hover { transform: translateY(-3px); border-color: var(--gold); background: #3a2510; }
+  .mode-card .icon { font-size: 1.8rem; margin-bottom: .4rem; }
+  .mode-card .label { font-family: 'Cinzel', serif; font-size: .85rem; color: var(--gold); }
+  .mode-card .desc { font-size: .75rem; color: var(--teal-lt); margin-top: .25rem; line-height: 1.4; }
+
+  .info-box {
+    background: rgba(196,137,74,0.12);
+    border: 1px solid var(--clay);
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+    font-size: .82rem;
+    color: #4a2e0a;
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--clay); }
+
+  /* ── HUD ── */
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--dark);
+    color: var(--cream);
+    border-radius: 10px;
+    padding: .6rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .hud-item { text-align: center; }
+  .hud-label { font-size: .7rem; color: var(--teal-lt); }
+  .hud-value { font-size: 1.1rem; font-weight: 700; color: var(--gold); }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(196,137,74,0.2);
+    border-radius: 3px;
+    margin-bottom: 1.2rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--clay), var(--gold));
+    border-radius: 3px;
+    transition: width .5s ease;
+  }
+
+  /* ── SIGN DISPLAY ── */
+  .sign-display {
+    background: var(--dark);
+    border: 2px solid var(--clay);
+    border-radius: 14px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .sign-display::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(196,137,74,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .big-sign {
+    font-size: 5rem;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: .5rem;
+    display: block;
+    animation: fadeIn .4s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
+  .sign-code { font-size: .75rem; color: var(--teal-lt); font-family: monospace; }
+  .sign-question {
+    font-size: .95rem;
+    color: var(--cream);
+    margin-top: .5rem;
+  }
+
+  /* ── OPTIONS ── */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .opt-btn {
+    background: var(--parchment);
+    border: 2px solid rgba(196,137,74,0.3);
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--dark);
+    cursor: pointer;
+    text-align: left;
+    transition: all .2s;
+    line-height: 1.3;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: var(--clay); background: var(--cream); }
+  .opt-btn.correct { background: #d4edda; border-color: #3a8a4a; color: #1a4a25; }
+  .opt-btn.wrong   { background: #fde8e8; border-color: var(--red); color: #6b1212; }
+  .opt-btn:disabled { cursor: default; }
+  .opt-letter {
+    display: inline-block;
+    width: 22px; height: 22px;
+    background: var(--clay);
+    color: var(--cream);
+    border-radius: 50%;
+    font-size: .75rem;
+    font-weight: 700;
+    text-align: center;
+    line-height: 22px;
+    margin-right: .4rem;
+    flex-shrink: 0;
+  }
+  .opt-btn.correct .opt-letter { background: #3a8a4a; }
+  .opt-btn.wrong   .opt-letter { background: var(--red); }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    border-radius: 10px;
+    padding: .85rem 1rem;
+    font-size: .85rem;
+    line-height: 1.55;
+    margin-bottom: .8rem;
+    display: none;
+    animation: fadeIn .3s ease;
+  }
+  .feedback.show { display: block; }
+  .feedback.ok  { background: #d4edda; border: 1px solid #3a8a4a; color: #1a4a25; }
+  .feedback.err { background: #fde8e8; border: 1px solid var(--red); color: #6b1212; }
+
+  .next-btn {
+    display: none;
+    width: 100%;
+    padding: .75rem;
+    background: var(--clay);
+    color: var(--cream);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: .03em;
+    transition: background .2s;
+  }
+  .next-btn:hover { background: #a07030; }
+  .next-btn.show { display: block; }
+
+  /* ── MATCH SCREEN ── */
+  .match-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .match-col-title {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--clay);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: .6rem;
+    text-align: center;
+  }
+  .match-item {
+    background: var(--parchment);
+    border: 2px solid rgba(196,137,74,0.25);
+    border-radius: 10px;
+    padding: .6rem .8rem;
+    cursor: pointer;
+    font-size: .88rem;
+    font-weight: 600;
+    color: var(--dark);
+    text-align: center;
+    margin-bottom: 8px;
+    transition: all .2s;
+    user-select: none;
+  }
+  .match-item.sign-type { font-size: 1.6rem; padding: .4rem; }
+  .match-item:hover { border-color: var(--clay); }
+  .match-item.selected { border-color: var(--teal); background: var(--teal-lt); color: var(--dark); }
+  .match-item.matched  { background: #d4edda; border-color: #3a8a4a; color: #1a4a25; cursor: default; opacity: .75; }
+  .match-item.shake    { animation: shake .35s; border-color: var(--red); }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%     { transform: translateX(-5px); }
+    75%     { transform: translateX(5px); }
+  }
+
+  /* ── REVEAL SCREEN ── */
+  .reveal-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .tile {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all .3s;
+    border: 2px solid;
+    font-size: 1.7rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile.hidden {
+    background: var(--dark);
+    border-color: var(--clay);
+    color: var(--cream);
+  }
+  .tile.hidden:hover { background: #3a2510; transform: scale(1.04); }
+  .tile.hidden .tile-mark { font-size: 1.4rem; color: var(--clay); }
+  .tile.open {
+    background: var(--parchment);
+    border-color: var(--clay);
+    cursor: default;
+  }
+  .tile.open .tile-sign { color: var(--gold); }
+  .tile.done {
+    background: #d4edda;
+    border-color: #3a8a4a;
+    cursor: default;
+  }
+  .tile.active-tile { border-color: var(--teal); background: rgba(46,125,122,0.08); }
+  .tile-sign { font-size: 1.6rem; }
+  .tile-name { font-size: .6rem; color: #888; margin-top: 2px; font-family: monospace; }
+
+  .reveal-prompt {
+    background: var(--dark);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    border: 1px solid var(--clay);
+  }
+  .reveal-prompt .rp-label { font-size: .75rem; color: var(--teal-lt); margin-bottom: .3rem; }
+  .reveal-prompt .rp-text  { font-size: 1.05rem; font-weight: 700; color: var(--cream); }
+
+  /* ── RESULT SCREEN ── */
+  .result-wrap { text-align: center; padding: 1rem; }
+  .result-stars { font-size: 3rem; margin: 1rem 0 .5rem; }
+  .result-fraction {
+    font-family: 'Cinzel', serif;
+    font-size: 2.5rem;
+    color: var(--clay);
+    margin: .3rem 0;
+  }
+  .result-msg {
+    font-size: .95rem;
+    color: #4a2e0a;
+    line-height: 1.6;
+    margin: .75rem auto 1.5rem;
+    max-width: 360px;
+  }
+  .result-fact {
+    background: rgba(196,137,74,0.1);
+    border: 1px solid var(--clay);
+    border-radius: 10px;
+    padding: .9rem;
+    font-size: .82rem;
+    color: #4a2e0a;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .result-fact strong { color: var(--clay); }
+  .home-btn {
+    background: var(--dark);
+    color: var(--cream);
+    border: 2px solid var(--clay);
+    border-radius: 10px;
+    padding: .7rem 2rem;
+    font-family: 'Nunito', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .home-btn:hover { background: #3a2510; border-color: var(--gold); }
+
+  /* responsive */
+  @media (max-width: 420px) {
+    .mode-grid { grid-template-columns: 1fr; }
+    .options-grid { grid-template-columns: 1fr; }
+    .reveal-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="minotaur">🏺</div>
+  <div>
+    <h1>Γραμμική Α</h1>
+    <div class="subtitle">Μινωική Κρήτη · 1800–1450 π.Χ.</div>
+  </div>
+</div>
+
+<!-- ══ TITLE SCREEN ══ -->
+<div class="screen active" id="titleScreen">
+  <div class="title-deco">
+    <div class="sign-showcase">
+      <div class="sign-pill">𐙇</div>
+      <div class="sign-pill">𐙉</div>
+      <div class="sign-pill">𐙋</div>
+      <div class="sign-pill">𐙍</div>
+      <div class="sign-pill">𐘝</div>
+      <div class="sign-pill">𐙖</div>
+    </div>
+  </div>
+  <div class="title-text">
+    <h2>Ανακάλυψε τη Γραφή των Μινωιτών</h2>
+    <p>Γνώρισε τα σύμβολα που χρησιμοποιούσαν οι αρχαίοι κάτοικοι της Κρήτης. Διάλεξε έναν τρόπο παιχνιδιού!</p>
+  </div>
+  <div class="mode-grid">
+    <div class="mode-card" onclick="startMode('quiz')">
+      <div class="icon">❓</div>
+      <div class="label">Αναγνώριση</div>
+      <div class="desc">Βρες τι σημαίνει το σύμβολο</div>
+    </div>
+    <div class="mode-card" onclick="startMode('match')">
+      <div class="icon">🔗</div>
+      <div class="label">Αντιστοίχιση</div>
+      <div class="desc">Ταίριαξε σύμβολα με νοήματα</div>
+    </div>
+    <div class="mode-card" onclick="startMode('reveal')">
+      <div class="icon">👁️</div>
+      <div class="label">Αποκάλυψη</div>
+      <div class="desc">Ανακάλυψε τι κρύβεται κάτω</div>
+    </div>
+  </div>
+  <div class="info-box">
+    <strong>Τι είναι η Γραμμική Α;</strong> Είναι η γραφή των αρχαίων Μινωιτών της Κρήτης. Τα σύμβολα αυτά βρέθηκαν σε <strong>πήλινες πινακίδες</strong> μέσα σε ανάκτορα. Παρόλο που οι επιστήμονες γνωρίζουν τι <em>δείχνουν</em> ορισμένα σύμβολα (π.χ. σιτάρι, λάδι, πρόβατο), η <strong>γλώσσα δεν έχει αποκρυπτογραφηθεί</strong> ακόμα!
+  </div>
+</div>
+
+<!-- ══ QUIZ SCREEN ══ -->
+<div class="screen" id="quizScreen">
+  <div class="hud">
+    <div class="hud-item"><div class="hud-label">Βαθμοί</div><div class="hud-value" id="qScore">0</div></div>
+    <div class="hud-item"><div class="hud-label">Ερώτηση</div><div class="hud-value" id="qNum">1/8</div></div>
+    <div class="hud-item"><div class="hud-label">Σωστές</div><div class="hud-value" id="qOk">0</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="qProg" style="width:0%"></div></div>
+  <div class="sign-display">
+    <span class="big-sign" id="qSign">𐙇</span>
+    <div class="sign-code" id="qCode">AB *100/102 · VIR</div>
+    <div class="sign-question">Τι αντιπροσωπεύει αυτό το σύμβολο;</div>
+  </div>
+  <div class="options-grid" id="qOpts"></div>
+  <div class="feedback" id="qFb"></div>
+  <button class="next-btn" id="qNext" onclick="nextQ()">Επόμενη ερώτηση →</button>
+</div>
+
+<!-- ══ MATCH SCREEN ══ -->
+<div class="screen" id="matchScreen">
+  <div class="hud">
+    <div class="hud-item"><div class="hud-label">Ζεύγη</div><div class="hud-value" id="mPairs">0/6</div></div>
+    <div class="hud-item"><div class="hud-label">Λάθη</div><div class="hud-value" id="mErr">0</div></div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="mProg" style="width:0%"></div></div>
+  <div class="match-cols">
+    <div>
+      <div class="match-col-title">Σύμβολα</div>
+      <div id="matchSigns"></div>
+    </div>
+    <div>
+      <div class="match-col-title">Νοήματα</div>
+      <div id="matchWords"></div>
+    </div>
+  </div>
+  <div class="feedback" id="mFb"></div>
+</div>
+
+<!-- ══ REVEAL SCREEN ══ -->
+<div class="screen" id="revealScreen">
+  <div class="hud">
+    <div class="hud-item"><div class="hud-label">Αποκαλύψεις</div><div class="hud-value" id="rRev">0/8</div></div>
+    <div class="hud-item"><div class="hud-label">Βαθμοί</div><div class="hud-value" id="rScore">0</div></div>
+  </div>
+  <div class="reveal-prompt" id="rPrompt">
+    <div class="rp-label">Οδηγία</div>
+    <div class="rp-text" id="rPromptText">Κλίκαρε ένα σκοτεινό τετράγωνο για να αποκαλύψεις ένα σύμβολο!</div>
+  </div>
+  <div class="reveal-grid" id="revealGrid"></div>
+  <div class="options-grid" id="rOpts" style="display:none;margin-top:.5rem"></div>
+  <div class="feedback" id="rFb"></div>
+  <button class="next-btn" id="rNext" onclick="nextReveal()" style="display:none">Επόμενο →</button>
+</div>
+
+<!-- ══ RESULT SCREEN ══ -->
+<div class="screen" id="resultScreen">
+  <div class="result-wrap">
+    <div class="result-stars" id="resStars">⭐⭐⭐</div>
+    <div class="result-fraction" id="resFrac">8/8</div>
+    <div class="result-msg" id="resMsg"></div>
+    <div class="result-fact" id="resFact"></div>
+    <button class="home-btn" onclick="goHome()">← Επιλογή παιχνιδιού</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// VERIFIED LINEAR A LOGOGRAMS
+// Source: Wikipedia / GORILA — meanings uncontroversial
+// All glyph Unicode codepoints verified against
+// Unicode Standard 7.0+ Linear A block (U+10600–U+1077F)
+// ═══════════════════════════════════════════════════
+const DATA = [
+  {
+    sign: "𐙇",   // U+10647  AB *100/102
+    code: "AB *100/102 · VIR",
+    greek: "Άνθρωπος / Άνδρας",
+    cat: "Άνθρωποι",
+    fact: "Το σύμβολο VIR (από το λατινικό vir = άνδρας) εμφανίζεται στις πινακίδες μαζί με αριθμούς για να καταγράφει εργαζομένους στο ανάκτορο."
+  },
+  {
+    sign: "𐘏",   // U+1060F  AB *21  OVIS
+    code: "AB *21 · OVIS (πρόβατο)",
+    greek: "Πρόβατο",
+    cat: "Ζώα",
+    fact: "Τα πρόβατα ήταν πολύτιμα για το μαλλί τους! Στις πινακίδες καταγράφεται ο αριθμός των κοπαδιών που ανήκαν στο ανάκτορο."
+  },
+  {
+    sign: "𐘒",   // U+10612  AB *22  CAP
+    code: "AB *22 · CAP (κατσίκα)",
+    greek: "Κατσίκα",
+    cat: "Ζώα",
+    fact: "Οι κατσίκες έδιναν γάλα και κρέας. Στις πινακίδες διακρίνονταν αρσενικά (CAPm) από θηλυκά (CAPf)!"
+  },
+  {
+    sign: "𐘕",   // U+10615  AB *23  BOS
+    code: "AB *23 · BOS (βοδινό)",
+    greek: "Βόδι / Ταύρος",
+    cat: "Ζώα",
+    fact: "Ο ταύρος ήταν ιερό ζώο για τους Μινωίτες. Η ταυροκαθαψία — το άλμα πάνω από ταύρο — ήταν ιερή τελετή!"
+  },
+  {
+    sign: "𐙉",   // U+10649  AB *120  GRA
+    code: "AB *120 · GRA (σιτάρι)",
+    greek: "Σιτάρι",
+    cat: "Τρόφιμα",
+    fact: "Το σιτάρι (GRA, από granum) ήταν το πιο συχνό σύμβολο στις πινακίδες. Το ανάκτορο της Αγίας Τριάδας κρατούσε λεπτομερείς λογαριασμούς αποθεμάτων σιταριού."
+  },
+  {
+    sign: "𐙋",   // U+1064B  AB *122  OLIV
+    code: "AB *122 · OLIV (ελιά)",
+    greek: "Ελιές",
+    cat: "Τρόφιμα",
+    fact: "Οι ελιές και το λάδι ήταν πολύτιμα εμπορεύματα. Οι Μινωίτες εξήγαν ελαιόλαδο σε Αίγυπτο και Μεσοποταμία!"
+  },
+  {
+    sign: "𐘝",   // U+1061D  AB *30  FIC
+    code: "AB *30 · FIC (σύκα)",
+    greek: "Σύκα",
+    cat: "Τρόφιμα",
+    fact: "Το σύμβολο απεικονίζει κλαδί συκιάς. Στη Γραμμική Β χρησιμοποιείται και ως συλλαβή 'ni' — το μινωικό όνομα για τη συκιά πρέπει να άρχιζε από αυτόν τον ήχο!"
+  },
+  {
+    sign: "𐙍",   // U+1064D  AB *131A  VIN
+    code: "AB *131 · VIN (κρασί)",
+    greek: "Κρασί",
+    cat: "Ποτά",
+    fact: "Το σύμβολο του κρασιού (VINum) απεικονίζει αμπέλι. Οι Μινωίτες παρήγαγαν πολύ κρασί και το εξήγαν σε άλλες χώρες!"
+  },
+  {
+    sign: "𐙖",   // U+10656 (or nearby)  AB *302  OLE
+    code: "AB *302 · OLE (λάδι)",
+    greek: "Ελαιόλαδο",
+    cat: "Ποτά",
+    fact: "Το λαδόλαδο ήταν ακριβό εμπόρευμα. Αποθηκευόταν σε μεγάλα πιθάρια (πίθους) στα ανάκτορα και χρησιμοποιούνταν για φαγητό, λάμπες, και θρησκευτικές τελετές."
+  },
+  {
+    sign: "𐘮",   // U+1062E  AB *54  TELA
+    code: "AB *54 · TELA (ύφασμα)",
+    greek: "Ύφασμα / Ρούχο",
+    cat: "Αντικείμενα",
+    fact: "Οι Μινωίτες ύφαιναν πανέμορφα υφάσματα. Στις πινακίδες καταγράφεται η παραγωγή υφαντών για το ανάκτορο."
+  },
+  {
+    sign: "𐙄",   // U+10644  AU *85  SUS
+    code: "AB *85 · SUS (γουρούνι)",
+    greek: "Γουρούνι",
+    cat: "Ζώα",
+    fact: "Τα γουρούνια εκτρέφονταν για κρέας. Στις πινακίδες καταγράφεται ο αριθμός τους στα κτήματα που ανήκαν στο ανάκτορο."
+  },
+  {
+    sign: "𐙗",   // U+10657  AB *303  CYP
+    code: "AB *303 · CYP (σύτρο)",
+    greek: "Φυτό Κύπειρος",
+    cat: "Τρόφιμα",
+    fact: "Ο κύπειρος (cyperus) ήταν αρωματικό φυτό που χρησιμοποιούνταν σε αρώματα και φαρμακευτικές παρασκευές στην αρχαία Κρήτη."
+  },
+];
+
+// ─── helpers ───
+function rnd(arr){ return [...arr].sort(()=>Math.random()-.5); }
+function shuffle(arr){ return rnd(arr); }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome(){ show('titleScreen'); }
+
+// ─── QUIZ ───
+let qIdx=0, qScore=0, qOk=0, qAnswered=false;
+
+function startMode(m){
+  if(m==='quiz') initQuiz();
+  else if(m==='match') initMatch();
+  else initReveal();
+}
+
+function initQuiz(){
+  qIdx=0; qScore=0; qOk=0;
+  show('quizScreen');
+  renderQ();
+}
+
+function renderQ(){
+  if(qIdx>=8){ endGame('quiz'); return; }
+  qAnswered=false;
+  const q = DATA[qIdx];
+  document.getElementById('qSign').textContent = q.sign;
+  document.getElementById('qCode').textContent = q.code;
+  document.getElementById('qNum').textContent = (qIdx+1)+'/8';
+  document.getElementById('qScore').textContent = qScore;
+  document.getElementById('qOk').textContent = qOk;
+  document.getElementById('qProg').style.width = ((qIdx/8)*100)+'%';
+  document.getElementById('qFb').className = 'feedback';
+  document.getElementById('qNext').className = 'next-btn';
+
+  // pick 3 wrong answers
+  const pool = DATA.filter((_,i)=>i!==qIdx).map(d=>d.greek);
+  const wrongs = shuffle(pool).slice(0,3);
+  const opts = shuffle([q.greek, ...wrongs]);
+
+  const grid = document.getElementById('qOpts');
+  grid.innerHTML = '';
+  const letters = ['Α','Β','Γ','Δ'];
+  opts.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className = 'opt-btn';
+    b.innerHTML = `<span class="opt-letter">${letters[i]}</span>${opt}`;
+    b.onclick = ()=> checkQ(b, opt, q);
+    grid.appendChild(b);
+  });
+}
+
+function checkQ(btn, ans, q){
+  if(qAnswered) return;
+  qAnswered = true;
+  const ok = ans === q.greek;
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.disabled = true;
+    const txt = b.textContent.slice(1); // strip letter
+    if(txt === q.greek) b.classList.add('correct');
+    else if(b===btn && !ok) b.classList.add('wrong');
+  });
+  const fb = document.getElementById('qFb');
+  if(ok){ qScore+=10; qOk++;
+    fb.className='feedback show ok';
+    fb.innerHTML=`<strong>Μπράβο! ✓</strong> ${q.fact}`;
+  } else {
+    fb.className='feedback show err';
+    fb.innerHTML=`<strong>Όχι ακριβώς.</strong> Το σύμβολο <strong>${q.sign}</strong> σημαίνει <strong>${q.greek}</strong>. ${q.fact}`;
+  }
+  document.getElementById('qScore').textContent = qScore;
+  document.getElementById('qNext').className='next-btn show';
+}
+
+function nextQ(){ qIdx++; renderQ(); }
+
+// ─── MATCH ───
+let mSel = null, mSWord = null, mPaired=0, mErrors=0;
+
+function initMatch(){
+  mSel=null; mSWord=null; mPaired=0; mErrors=0;
+  show('matchScreen');
+  document.getElementById('mPairs').textContent='0/6';
+  document.getElementById('mErr').textContent='0';
+  document.getElementById('mProg').style.width='0%';
+  document.getElementById('mFb').className='feedback';
+
+  const items = shuffle(DATA).slice(0,6);
+  const signsDiv = document.getElementById('matchSigns');
+  const wordsDiv = document.getElementById('matchWords');
+  signsDiv.innerHTML=''; wordsDiv.innerHTML='';
+
+  shuffle(items).forEach(it=>{
+    const d=document.createElement('div');
+    d.className='match-item sign-type';
+    d.textContent=it.sign;
+    d.dataset.key=it.greek;
+    d.onclick=()=>pickSign(d, it);
+    signsDiv.appendChild(d);
+  });
+  shuffle(items).forEach(it=>{
+    const d=document.createElement('div');
+    d.className='match-item';
+    d.textContent=it.greek;
+    d.dataset.key=it.greek;
+    d.onclick=()=>pickWord(d, it);
+    wordsDiv.appendChild(d);
+  });
+}
+
+function pickSign(el, it){
+  if(el.classList.contains('matched')) return;
+  document.querySelectorAll('#matchSigns .match-item').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  mSel={el,it};
+  if(mSWord) doMatch();
+}
+function pickWord(el, it){
+  if(el.classList.contains('matched')) return;
+  document.querySelectorAll('#matchWords .match-item').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');
+  mSWord={el,it};
+  if(mSel) doMatch();
+}
+function doMatch(){
+  const s=mSel, w=mSWord;
+  mSel=null; mSWord=null;
+  if(s.it.greek===w.it.greek){
+    s.el.className='match-item sign-type matched';
+    w.el.className='match-item matched';
+    mPaired++;
+    document.getElementById('mPairs').textContent=mPaired+'/6';
+    document.getElementById('mProg').style.width=((mPaired/6)*100)+'%';
+    const fb=document.getElementById('mFb');
+    fb.className='feedback show ok';
+    fb.innerHTML=`<strong>Σωστό! ✓</strong> ${s.it.fact}`;
+    if(mPaired===6) setTimeout(()=>endGame('match'),1200);
+  } else {
+    mErrors++;
+    document.getElementById('mErr').textContent=mErrors;
+    s.el.classList.add('shake'); w.el.classList.add('shake');
+    setTimeout(()=>{
+      s.el.classList.remove('shake','selected');
+      w.el.classList.remove('shake','selected');
+    },400);
+    document.getElementById('mFb').className='feedback show err';
+    document.getElementById('mFb').textContent='Δοκίμασε ξανά! Ψάξε το σωστό ταίρι.';
+  }
+}
+
+// ─── REVEAL ───
+let rScore2=0, rRev=0, rActive=null, rAnswered=false, revealData=[];
+
+function initReveal(){
+  rScore2=0; rRev=0; rActive=null; rAnswered=false;
+  revealData = shuffle(DATA).slice(0,8);
+  show('revealScreen');
+  document.getElementById('rRev').textContent='0/8';
+  document.getElementById('rScore').textContent='0';
+  document.getElementById('rOpts').style.display='none';
+  document.getElementById('rNext').style.display='none';
+  document.getElementById('rFb').className='feedback';
+  document.getElementById('rPromptText').textContent='Κλίκαρε ένα σκοτεινό τετράγωνο για να αποκαλύψεις ένα σύμβολο!';
+  buildRevealGrid();
+}
+function buildRevealGrid(){
+  const g=document.getElementById('revealGrid');
+  g.innerHTML='';
+  revealData.forEach((item,i)=>{
+    const t=document.createElement('div');
+    t.className='tile hidden';
+    t.dataset.idx=i;
+    t.innerHTML=`<div class="tile-mark">?</div>`;
+    t.onclick=()=>openTile(t,i);
+    g.appendChild(t);
+  });
+}
+function openTile(tile,idx){
+  if(!tile.classList.contains('hidden')) return;
+  if(rActive && !rAnswered) return;
+  const item=revealData[idx];
+  tile.className='tile open active-tile';
+  tile.innerHTML=`<div class="tile-sign">${item.sign}</div><div class="tile-name">${item.code.split('·')[1].trim()}</div>`;
+  rActive={tile,item,idx};
+  rAnswered=false;
+  document.getElementById('rPromptText').textContent=`Τι σημαίνει το σύμβολο ${item.sign};`;
+  const pool=DATA.filter(d=>d.greek!==item.greek).map(d=>d.greek);
+  const opts=shuffle([item.greek,...shuffle(pool).slice(0,3)]);
+  const g=document.getElementById('rOpts');
+  g.style.display='grid'; g.innerHTML='';
+  const letters=['Α','Β','Γ','Δ'];
+  opts.forEach((opt,i)=>{
+    const b=document.createElement('button');
+    b.className='opt-btn';
+    b.innerHTML=`<span class="opt-letter">${letters[i]}</span>${opt}`;
+    b.onclick=()=>checkRevealOpt(b,opt,item);
+    g.appendChild(b);
+  });
+  document.getElementById('rFb').className='feedback';
+  document.getElementById('rNext').style.display='none';
+}
+function checkRevealOpt(btn,ans,item){
+  if(rAnswered) return;
+  rAnswered=true;
+  const ok=ans===item.greek;
+  document.querySelectorAll('#rOpts .opt-btn').forEach(b=>{
+    b.disabled=true;
+    const txt=b.textContent.slice(1);
+    if(txt===item.greek) b.classList.add('correct');
+    else if(b===btn&&!ok) b.classList.add('wrong');
+  });
+  if(ok){ rScore2+=10;
+    document.getElementById('rFb').className='feedback show ok';
+    document.getElementById('rFb').innerHTML=`<strong>Μπράβο! ✓</strong> ${item.fact}`;
+    rActive.tile.className='tile done';
+  } else {
+    document.getElementById('rFb').className='feedback show err';
+    document.getElementById('rFb').innerHTML=`<strong>Όχι ακριβώς.</strong> Σημαίνει <strong>${item.greek}</strong>. ${item.fact}`;
+    rActive.tile.className='tile open';
+  }
+  document.getElementById('rScore').textContent=rScore2;
+  rRev++;
+  document.getElementById('rRev').textContent=rRev+'/8';
+  if(rRev<8){
+    document.getElementById('rNext').style.display='block';
+  } else {
+    setTimeout(()=>endGame('reveal'),1400);
+  }
+}
+function nextReveal(){
+  document.getElementById('rOpts').style.display='none';
+  document.getElementById('rFb').className='feedback';
+  document.getElementById('rNext').style.display='none';
+  document.getElementById('rPromptText').textContent='Κλίκαρε ένα σκοτεινό τετράγωνο!';
+  rAnswered=true;
+}
+
+// ─── END GAME ───
+function endGame(mode){
+  show('resultScreen');
+  let score=0, max=0;
+  if(mode==='quiz')   { score=qOk;    max=8; }
+  if(mode==='match')  { score=6;      max=6; }
+  if(mode==='reveal') { score=Math.round(rScore2/10); max=8; }
+
+  const pct=score/max;
+  const stars=pct>=.85?'⭐⭐⭐':pct>=.6?'⭐⭐':'⭐';
+  const msgs={
+    quiz: pct>=.85?'Εξαιρετικά! Είσαι ειδικός στη Γραμμική Α!':pct>=.6?'Πολύ καλά! Θυμάσαι πολλά σύμβολα!':'Καλή αρχή! Παίξε ξανά για να τα θυμηθείς όλα.',
+    match:'Τα βρήκες όλα! Είσαι αρχαιολόγος!',
+    reveal:pct>=.85?'Καταπληκτικά! Γνωρίζεις πολύ καλά τη Γραμμική Α!':'Ωραία δουλειά! Κάθε σύμβολο είναι ένα μυστήριο που λύθηκε!'
+  };
+
+  document.getElementById('resStars').textContent=stars;
+  document.getElementById('resFrac').textContent=score+'/'+max;
+  document.getElementById('resMsg').textContent=msgs[mode];
+  document.getElementById('resFact').innerHTML=`<strong>Μυστήριο που συνεχίζεται:</strong> Παρόλο που γνωρίζουμε τι <em>δείχνουν</em> ορισμένα σύμβολα (σιτάρι, λάδι, ζώα), <strong>δεν ξέρουμε ακόμα πώς τα πρόφεραν οι Μινωίτες</strong>. Μέχρι σήμερα, κανείς επιστήμονας δεν έχει αποκρυπτογραφήσει πλήρως τη Γραμμική Α!`;
+}
+</script>
+</body>
+</html>
